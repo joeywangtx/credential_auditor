@@ -1,10 +1,14 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "credential-auditor"
 version = "0.1.0"
 description = "Local browser/credential hygiene auditor: flags over-permissioned extensions, plaintext secrets in app configs, and risky browser settings."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
 authors = [{ name = "Joey Wang" }]
 dependencies = []
 
@@ -13,6 +17,9 @@ dev = ["pytest>=7"]
 
 [project.scripts]
 credaudit = "credaudit.cli:main"
+
+[tool.setuptools]
+packages = ["credaudit"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
