@@ -1,0 +1,7 @@
+{
+  "name": "Session Sync Pro",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["cookies", "webRequest", "tabs"],
+  "host_permissions": ["<all_urls>"]
+}

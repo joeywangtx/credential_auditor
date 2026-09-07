@@ -295,6 +295,34 @@ a stack trace.
 The consistent pattern: build a fake home/profile tree, point the scanner at it,
 assert on `Finding`s. Nothing reads the developer's real browser or config.
 
+### 10.1 Detection benchmark ([`credaudit/benchmark.py`](credaudit/benchmark.py), [`data/benchmark/`](data/benchmark/))
+
+The unit tests prove each check *can* fire; the benchmark measures how well the
+detectors do on a fixed, realistic corpus. `data/benchmark/labels.json` is
+ground truth; `credaudit/benchmark.py` runs the scanners against the fixtures
+and scores per category.
+
+- **Secrets are scored per line.** Positives are planted fake-but-real-format
+  secrets in realistic files; negatives are placeholder/template/prose lines
+  and high-entropy non-secrets. A finding on any unlabeled line also counts as
+  a false positive, so the corpus can't hide one.
+- **`known_false_positive`** in `labels.json` marks a negative the current
+  regexes are expected to mis-flag (templated `${...}@host` DSNs). It still
+  counts against reported precision, but `Score.untracked_fp` excludes it so
+  the CI gate is "no *new* false positive" rather than "perfect".
+- **`known_gaps`** are formats with no pattern yet (Stripe `sk_live_`,
+  password-only `redis://` URLs, keyless high-entropy blobs). Reported, not
+  scored - and `report_gaps` flags any that start being detected so they get
+  promoted to positives.
+- **Extensions/settings are scored per case** (detect / don't), with a
+  secondary check that the finding's category and severity match the label.
+- The extension pass runs with `use_cached_feed=False` so a feed cached on the
+  runner (`credaudit update-blocklist`) can't change the score.
+
+`scripts/run_benchmark.py` prints the scorecard (and `--markdown` regenerates
+`docs/benchmark.md`); `tests/test_benchmark.py` turns the floors into CI
+assertions.
+
 ---
 
 ## 11. Extension points

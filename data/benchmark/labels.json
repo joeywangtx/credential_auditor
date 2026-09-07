@@ -1,0 +1,84 @@
+{
+  "_comment": "Ground truth for the detection benchmark. See docs/benchmark.md. Line numbers are 1-based. 'known_false_positive' marks a negative the current patterns are expected to mis-flag (tracked, excluded from the pass/fail gate but shown in the scorecard). 'known_gaps' are secret formats not yet covered - reported, not scored.",
+  "secrets": {
+    "positives": [
+      {"file": "secrets/aws_credentials", "line": 3, "pattern": "AWS Access Key ID", "severity": "CRITICAL"},
+      {"file": "secrets/aws_credentials", "line": 4, "pattern": "AWS Secret Access Key (assignment)", "severity": "CRITICAL"},
+      {"file": "secrets/git_credentials", "line": 1, "pattern": "GitHub Token", "severity": "CRITICAL"},
+      {"file": "secrets/git_credentials", "line": 2, "pattern": "Connection string with credentials", "severity": "HIGH"},
+      {"file": "secrets/slack_app.json", "line": 3, "pattern": "Slack Token", "severity": "HIGH"},
+      {"file": "secrets/google_service.env", "line": 2, "pattern": "Google API Key", "severity": "HIGH"},
+      {"file": "secrets/id_ed25519", "line": 1, "pattern": "Generic private key block", "severity": "CRITICAL"},
+      {"file": "secrets/session.jwt", "line": 1, "pattern": "JWT", "severity": "MEDIUM"},
+      {"file": "secrets/pip.conf", "line": 2, "pattern": "Connection string with credentials", "severity": "HIGH"},
+      {"file": "secrets/database.env", "line": 2, "pattern": "Connection string with credentials", "severity": "HIGH"},
+      {"file": "secrets/database.env", "line": 3, "pattern": "Connection string with credentials", "severity": "HIGH"},
+      {"file": "secrets/deploy.sh", "line": 2, "pattern": "GitHub Token", "severity": "CRITICAL"},
+      {"file": "secrets/app_config.ini", "line": 4, "pattern": "Password-like assignment", "severity": "HIGH"},
+      {"file": "secrets/app_config.ini", "line": 8, "pattern": "Generic API key/token assignment", "severity": "HIGH"},
+      {"file": "secrets/app_config.ini", "line": 11, "pattern": "Generic API key/token assignment", "severity": "HIGH"},
+      {"file": "secrets/secrets.yaml", "line": 2, "pattern": "Slack Token", "severity": "HIGH"},
+      {"file": "secrets/secrets.yaml", "line": 3, "pattern": "Password-like assignment", "severity": "HIGH"},
+      {"file": "secrets/secrets.yaml", "line": 4, "pattern": "Generic API key/token assignment", "severity": "HIGH"}
+    ],
+    "negatives": [
+      {"file": "secrets/slack_app.json", "line": 4, "why": "Slack webhook URL - not a basic-auth credential"},
+      {"file": "secrets/google_service.env", "line": 1, "why": "project name"},
+      {"file": "secrets/google_service.env", "line": 3, "why": "public analytics id"},
+      {"file": "secrets/id_ed25519", "line": 2, "why": "base64 key body, no assignment"},
+      {"file": "secrets/id_ed25519", "line": 3, "why": "base64 key body, no assignment"},
+      {"file": "secrets/id_ed25519", "line": 4, "why": "base64 key body, no assignment"},
+      {"file": "secrets/database.env", "line": 1, "why": "NODE_ENV value"},
+      {"file": "secrets/database.env", "line": 4, "why": "port number"},
+      {"file": "secrets/deploy.sh", "line": 3, "why": "aws cli invocation, no secret"},
+      {"file": "secrets/deploy.sh", "line": 5, "why": "echo"},
+      {"file": "secrets/app_config.ini", "line": 2, "why": "hostname"},
+      {"file": "secrets/app_config.ini", "line": 3, "why": "db username"},
+      {"file": "secrets/app_config.ini", "line": 7, "why": "oauth client_id is not a secret"},
+      {"file": "secrets/secrets.yaml", "line": 5, "why": "debug flag"},
+      {"file": "secrets/env.example", "line": 2, "why": "empty value"},
+      {"file": "secrets/env.example", "line": 3, "why": "placeholder 'your-secret-here'"},
+      {"file": "secrets/env.example", "line": 4, "why": "${GITHUB_TOKEN} shell interpolation"},
+      {"file": "secrets/env.example", "line": 5, "why": "user:password@localhost in a committed .env.example", "known_false_positive": true},
+      {"file": "secrets/env.example", "line": 6, "why": "placeholder 'changeme'"},
+      {"file": "secrets/env.example", "line": 7, "why": "<...> placeholder"},
+      {"file": "secrets/config.template.yml", "line": 2, "why": "{{ }} template marker"},
+      {"file": "secrets/config.template.yml", "line": 3, "why": "${DB_USER}:${DB_PASS}@ templated DSN", "known_false_positive": true},
+      {"file": "secrets/config.template.yml", "line": 5, "why": "CHANGEME placeholder"},
+      {"file": "secrets/config.template.yml", "line": 6, "why": "%API_KEY% placeholder"},
+      {"file": "secrets/notes.md", "line": 3, "why": "prose mentioning API_KEY"},
+      {"file": "secrets/notes.md", "line": 4, "why": "example command, localhost dsn no creds"},
+      {"file": "secrets/notes.md", "line": 5, "why": "prose mentioning password"},
+      {"file": "secrets/notes.md", "line": 6, "why": "prose mentioning deploy token"},
+      {"file": "secrets/build_metadata.json", "line": 2, "why": "git commit sha, no keyword"},
+      {"file": "secrets/build_metadata.json", "line": 3, "why": "artifact sha256, no keyword"},
+      {"file": "secrets/build_metadata.json", "line": 5, "why": "container image digest"}
+    ],
+    "known_gaps": [
+      {"file": "secrets/gaps/stripe.env", "line": 2, "why": "Stripe sk_live_ secret key - no dedicated pattern; key name STRIPE_SECRET_KEY does not hit the \\bsecret_key word boundary"},
+      {"file": "secrets/gaps/redis_passwordonly.env", "line": 1, "why": "redis://:password@host - connection-string pattern requires a non-empty username"},
+      {"file": "secrets/gaps/high_entropy.txt", "line": 1, "why": "high-entropy token with no nearby key name - no entropy check (DESIGN.md section 12)"}
+    ]
+  },
+  "extensions": {
+    "cases": [
+      {"dir": "extensions/combo_session_theft", "browser": "chrome", "detect": true, "category": "extension_permission_combo", "severity": "CRITICAL", "why": "cookies + webRequest = session-token exfiltration combo"},
+      {"dir": "extensions/three_high_risk", "browser": "chrome", "detect": true, "category": "extension_permission", "severity": "HIGH", "why": "3 high-risk permissions (history, clipboardRead, geolocation)"},
+      {"dir": "extensions/single_high_risk", "browser": "chrome", "detect": true, "category": "extension_permission", "severity": "MEDIUM", "why": "one high-risk permission (tabs)"},
+      {"dir": "extensions/legacy_mv2", "browser": "chrome", "detect": true, "category": "extension_manifest_version", "severity": "LOW", "why": "Manifest V2"},
+      {"dir": "extensions/blocklisted_id", "browser": "chrome", "detect": true, "category": "extension_blocklisted", "severity": "CRITICAL", "why": "ID is in the built-in blocklist"},
+      {"dir": "extensions/clean_notetaker", "browser": "chrome", "detect": false, "why": "storage + alarms only"},
+      {"dir": "extensions/clean_theme", "browser": "chrome", "detect": false, "why": "theme, no permissions"}
+    ]
+  },
+  "settings": {
+    "cases": [
+      {"dir": "settings/chromium_insecure", "browser": "chrome", "detect": true, "min_findings": 4, "why": "password manager on, Safe Browsing off, card autofill on, leak detection off, geolocation allow-by-default"},
+      {"dir": "settings/chromium_pwmgr_only", "browser": "chrome", "detect": true, "min_findings": 1, "why": "only the built-in password manager is on"},
+      {"dir": "settings/chromium_safebrowsing_off", "browser": "chrome", "detect": true, "min_findings": 1, "why": "only Safe Browsing is off"},
+      {"dir": "settings/chromium_secure", "browser": "chrome", "detect": false, "why": "every checked toggle is at its secure value"},
+      {"dir": "settings/firefox_insecure", "browser": "firefox", "profile": "p1.default", "detect": true, "min_findings": 3, "why": "saved logins on, breach alerts off, Safe Browsing off"},
+      {"dir": "settings/firefox_secure", "browser": "firefox", "profile": "p1.default", "detect": false, "why": "every checked pref is at its secure value"}
+    ]
+  }
+}

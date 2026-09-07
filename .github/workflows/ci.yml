@@ -28,5 +28,8 @@ jobs:
       - name: Run tests
         run: python -m pytest -q
 
+      - name: Detection benchmark scorecard
+        run: python scripts/run_benchmark.py
+
       - name: Smoke-test the CLI
         run: credaudit --help

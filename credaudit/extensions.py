@@ -276,10 +276,12 @@ def _scan_firefox_extension_xpi(
 
 
 def scan_extensions(
-    profiles: list[BrowserProfile] | None = None, blocklist_path: Path | None = None
+    profiles: list[BrowserProfile] | None = None,
+    blocklist_path: Path | None = None,
+    use_cached_feed: bool = True,
 ) -> list[Finding]:
     profiles = profiles if profiles is not None else find_all_profiles()
-    blocklist = load_blocklist(blocklist_path)
+    blocklist = load_blocklist(blocklist_path, use_cached_feed=use_cached_feed)
     findings: list[Finding] = []
 
     for profile in profiles:

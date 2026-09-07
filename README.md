@@ -117,6 +117,28 @@ Tests use temporary, synthetic profile/manifest/config fixtures - they never tou
 your real browser data. CI (`.github/workflows/ci.yml`) runs the suite on Linux,
 macOS, and Windows against Python 3.10-3.13.
 
+## Detection benchmark
+
+`data/benchmark/` is a hand-labeled corpus - realistic credential/config files
+with planted fake-but-real-format secrets and hard negatives (placeholders,
+templated DSNs, git SHAs), synthetic extension manifests (permission combos,
+Manifest V2, a blocklisted ID), and browser preference files (each insecure
+toggle plus a secure twin). `python scripts/run_benchmark.py` scores the
+scanners against it and prints a confusion matrix:
+
+```
+category     cases   TP   FP   FN   TN  precision   recall     F1
+secrets         49   18    2    0   29      0.900    1.000  0.947
+extensions       7    5    0    0    2      1.000    1.000  1.000
+settings         6    4    0    0    2      1.000    1.000  1.000
+overall         62   27    2    0   33      0.931    1.000  0.964
+```
+
+Full write-up, including the two tracked false positives and the known
+uncovered formats, is in [docs/benchmark.md](docs/benchmark.md) (regenerate
+with `--markdown`). `tests/test_benchmark.py` gates CI on recall (nothing
+missed) and untracked precision (no new false positive).
+
 ## Integration with host_intrusion_detector
 
 The companion [`host_intrusion_detector`](../host_intrusion_detector) project can run

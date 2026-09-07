@@ -1,0 +1,9 @@
+{
+  "credentials_enable_service": false,
+  "safebrowsing": { "enabled": false },
+  "autofill": { "credit_card_enabled": false },
+  "profile": {
+    "password_manager_leak_detection": true,
+    "default_content_setting_values": { "geolocation": 2 }
+  }
+}
