@@ -283,7 +283,7 @@ a stack trace.
 
 ## 10. Testing strategy
 
-`pytest`, stdlib only, CI on Linux/macOS/Windows × Python 3.10–3.13.
+`pytest`, stdlib only, CI on Linux/macOS/Windows × Python 3.10, 3.12, and 3.13.
 
 | File | Approach |
 |---|---|
